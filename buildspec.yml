@@ -1,20 +1,34 @@
 version: 0.2
+
 phases:
   install:
     commands:
-      - echo Installing NGINX
-      - sudo apt-get update -y
-      - sudo apt install nginx -y
+      - echo "Installing NGINX"
+      - |
+        if command -v apt-get >/dev/null; then
+          sudo apt-get update -y
+          sudo apt-get install nginx -y
+        elif command -v yum >/dev/null; then
+          sudo yum update -y
+          sudo yum install nginx -y
+        elif command -v dnf >/dev/null; then
+          sudo dnf update -y
+          sudo dnf install nginx -y
+        else
+          echo "Unsupported package manager. Exiting."
+          exit 1
+        fi
+
   build:
     commands:
-      - echo Building started on '$date'
+      - echo "Building started on $(date)"
       - sudo cp index.html /var/www/html/
 
   post_build:
     commands:
-      - echo Configuring NGINX
-      
+      - echo "Configuring NGINX"
+
 artifacts:
-  files: 
-   - '**/*'
+  files:
+    - '**/*'
 
